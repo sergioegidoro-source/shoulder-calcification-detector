@@ -1,0 +1,17 @@
+{
+    "models": {
+        "cnn": 152,
+        "seg": 65
+    },
+    "laterality": {
+        "Left": 95,
+        "Right": 122,
+        "Unknown": 0
+    },
+    "diagnosis": {
+        "Positive": 161,
+        "Negative": 56
+    },
+    "cnn": 152,
+    "seg": 65
+}

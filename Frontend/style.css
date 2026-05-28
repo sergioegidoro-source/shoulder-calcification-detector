@@ -1,0 +1,1028 @@
+/* =========================================
+   1. VARIABLES & RESET
+   ========================================= */
+:root {
+    --bg-gradient: radial-gradient(circle at top center, #1e293b 0%, #0f172a 100%);
+    --surface-color: rgba(30, 41, 59, 0.7);
+    --surface-hover: rgba(30, 41, 59, 0.9);
+    --border-color: rgba(255, 255, 255, 0.1);
+    --primary-gradient: linear-gradient(90deg, #60a5fa, #a78bfa);
+    --accent-blue: #60a5fa;
+    --accent-red: #f87171;
+    --accent-green: #4effa3;
+    --text-main: #e2e8f0;
+    --text-muted: #94a3b8;
+    --font-main: 'Inter', sans-serif;
+    --card-bg: rgba(20, 25, 35, 0.7);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: var(--font-main);
+
+    background:
+        linear-gradient(rgba(15,23,42,0.85), rgba(15,23,42,0.85)),
+        url("Images/shoulder_x-ray.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    color: var(--text-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+/* =========================================
+   2. TYPOGRAPHY
+   ========================================= */
+h1 {
+    font-weight: 700;
+    font-size: 2.5rem;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 15px;
+    letter-spacing: -1px;
+    text-align: center;
+}
+
+h2 { font-size: 1.5rem; color: #f1f5f9; margin-bottom: 8px; font-weight: 700; transition: color 0.3s ease; }
+
+.subtitle { font-size: 1rem; color: var(--text-muted); max-width: 600px; margin: 0 auto 20px; line-height: 1.6; text-align: center; }
+
+#selectedModelText {
+    color: var(--text-muted); font-size: 0.9rem; margin-bottom: 40px;
+    background: rgba(255, 255, 255, 0.05); padding: 5px 15px; border-radius: 20px; text-align: center;
+}
+
+/* =========================================
+   3. LANDING PAGE CARDS
+   ========================================= */
+.header-content { text-align: center; margin-bottom: 50px; animation: fadeInDown 0.8s ease-out; }
+
+.card-container {
+    display: flex;
+    gap: 60px;
+    justify-content: center;
+    padding: 50px;
+    perspective: 1000px;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 1200px;
+}
+
+.card {
+    cursor: pointer;
+    position: relative;
+    overflow: visible;
+    user-select: none;
+    width: 420px;
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 30px;
+    padding: 40px 30px;
+    transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+    backdrop-filter: blur(10px);
+    
+    /* --- CAMBIOS PARA CENTRAR --- */
+    display: flex;
+    flex-direction: column;
+    align-items: center;    /* Centra horizontalmente */
+    justify-content: center; /* Centra verticalmente */
+    text-align: center;      /* Centra el texto */
+    
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    animation: fadeInUp 0.8s ease-out backwards;
+}
+
+.card > * { pointer-events: none; }
+
+.card:hover {
+    transform: translateY(-15px) rotateX(5deg);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+#btn-standard:hover { box-shadow: 0 25px 50px -12px rgba(96, 165, 250, 0.3); }
+#btn-advanced:hover { box-shadow: 0 25px 50px -12px rgba(78, 255, 163, 0.3); }
+
+.card-glow {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.08), transparent);
+    pointer-events: none;
+}
+
+.card-icon {
+    font-size: 3.5rem;
+    margin-bottom: 25px;
+    color: rgba(255,255,255,0.8);
+    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+#btn-standard:hover .card-icon { color: var(--accent-blue); transform: scale(1.1) rotate(-10deg); }
+#btn-advanced:hover .card-icon { color: var(--accent-green); transform: scale(1.1) rotate(10deg); }
+
+.select-indicator {
+    margin-top: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    opacity: 0.3;
+    transition: 0.3s;
+}
+
+.card:hover .select-indicator {
+    opacity: 1;
+    color: #fff;
+}
+
+.card-icon-wrapper {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 25px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.card-icon-wrapper {
+    margin: 0 0 25px 0; /* Quitamos el 'auto' lateral porque Flexbox ya lo centra */
+}
+
+.blue-theme i { color: var(--accent-blue); }
+.green-theme i { color: var(--accent-green); }
+
+.card:hover .card-icon-wrapper.blue-theme {
+    background: var(--accent-blue);
+    box-shadow: 0 0 20px rgba(96, 165, 250, 0.4);
+}
+
+.card:hover .card-icon-wrapper.green-theme {
+    background: var(--accent-green);
+    box-shadow: 0 0 20px rgba(78, 255, 163, 0.4);
+}
+
+.card:hover .card-icon-wrapper i {
+    color: #ffffff !important;
+    transform: scale(1.1);
+}
+
+/* =========================================
+   4. APP CONTROLS
+   ========================================= */
+.controls-wrapper {
+    display: flex; gap: 20px; background: var(--surface-color); backdrop-filter: blur(10px);
+    padding: 15px 30px; border-radius: 16px; border: 1px solid var(--border-color);
+    margin-bottom: 30px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    flex-wrap: wrap; justify-content: center; align-items: center;
+}
+.control-group { display: flex; align-items: center; gap: 10px; }
+label { font-size: 0.9rem; font-weight: 600; color: #cbd5e1; }
+select { background: #0f172a; color: #fff; border: 1px solid #334155; padding: 8px 12px; border-radius: 8px; outline: none; cursor: pointer; }
+input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent-blue); cursor: pointer; }
+
+/* =========================================
+   UPLOAD AREA DESIGN
+   ========================================= */
+.main-upload-wrapper {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto 40px;
+}
+
+.drop-area {
+    /* Dark background */
+    background: rgba(15, 23, 42, 0.6); 
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    padding: 50px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Hover Effect */
+.drop-area:hover {
+    background: rgba(30, 41, 59, 0.8);
+    border-color: #60a5fa; /* Light blue border on hover */
+}
+
+/* Dragover Effect */
+.drop-area.dragover {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: #3b82f6;
+    transform: scale(1.01);
+}
+
+/* Icon Style */
+.icon-container svg {
+    color: #e2e8f0;
+    margin-bottom: 15px;
+}
+
+/* Text Styles */
+.drop-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 5px;
+}
+
+.drop-subtitle {
+    font-size: 0.9rem;
+    color: #94a3b8; /* Muted text */
+    margin-bottom: 25px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Blue Button Style */
+.browse-btn {
+    background-color: #3b82f6; /* Bright blue */
+    color: white;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    pointer-events: none; /* Let the click pass through to the container */
+}
+
+.drop-area:hover .browse-btn {
+    background-color: #2563eb; /* Darker blue on hover */
+}
+
+/* File Name Display */
+.file-name {
+    margin-top: 20px;
+    font-size: 0.9rem;
+    color: #4effa3; /* Green text for success */
+    font-weight: 600;
+    min-height: 20px;
+}
+
+/* =========================================
+   5. RESULTS SECTION
+   ========================================= */
+#resultsContainer {
+    width: 100%;
+    max-width: 900px;
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid var(--border-color);
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+
+    margin: 40px auto 60px auto; /* esto ya centra */
+    
+    animation: fadeIn 0.5s ease-out;
+}
+
+.result-grid {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;  /* Center horizontally */
+    align-items: stretch;
+}
+
+.result-content {
+    flex: 1;
+    min-width: 250px;
+    background: rgba(30, 41, 59, 0.4);
+    padding: 20px 25px;
+    border-radius: 0 12px 12px 0;
+    border-left: 6px solid transparent;
+}
+
+.status-detected { border-left-color: var(--accent-red); }
+.status-detected .diagnosis-highlight { color: var(--accent-red); }
+.status-normal { border-left-color: var(--accent-green); }
+.status-normal .diagnosis-highlight { color: var(--accent-green); }
+
+.model-badge {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.diagnosis-highlight {
+    font-size: 2.2rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 15px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.result-meta { font-size: 0.9rem; color: var(--text-muted); font-weight: 600; }
+
+.laterality-info {
+    margin-top: 25px;
+    padding-top: 15px;
+    text-align: center;
+    font-size: 1.1rem;
+    color: var(--text-main);
+    border-top: 1px solid var(--border-color);
+}
+
+
+/* =========================================
+   6. IMAGES (GRID LAYOUT FOR SEG_300)
+   ========================================= */
+
+.comparison-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: stretch;
+    gap: 15px;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    height: auto
+}
+
+/* When segmentation mode is active */
+.comparison-container.seg-mode {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+/* If YOLO is hidden → use 2 columns */
+.comparison-container.seg-mode.no-yolo {
+    grid-template-columns: repeat(2, 1fr);
+}   
+
+.img-box {
+    flex: 1;
+    min-width: 0;
+    position: relative;
+    background: #1e293b;
+    padding: 15px;
+    border-radius: 16px;
+    border: 1px solid #334155;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.img-title {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 6px 14px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid #334155;
+    z-index: 5;
+    backdrop-filter: blur(6px);
+    white-space: nowrap;
+}
+
+.img-box img {
+    cursor: zoom-in; 
+    transition: transform 0.2s ease;
+    width: 100%;
+    height: auto;
+    margin-top: 32px;
+    border-radius: 8px;
+    background-color: #0f172a;
+    object-fit: contain;
+    max-height: 400px;
+}
+
+#boxOriginal .img-title { color: var(--accent-blue); }
+#boxOriginal img { border: 2px solid #e2e8f0; }
+#boxGradcam .img-title { color: var(--accent-red); }
+#boxGradcam img { border: 2px solid #991b1b; }
+#boxSeg .img-title { color: var(--accent-green); }
+#boxSeg img { border: 2px solid #22c55e; }
+
+/* =========================================
+   7. ANIMATIONS & UI
+   ========================================= */
+@keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes popIn { 0% { opacity: 0; transform: scale(0.9) translateY(10px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+
+.spinner-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px; width: 100%; }
+.spinner { width: 50px; height: 50px; border: 4px solid rgba(255, 255, 255, 0.1); border-left-color: var(--accent-blue); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
+.loading-text { color: var(--text-muted); font-size: 0.9rem; animation: pulse 1.5s ease-in-out infinite; }
+
+.back-btn {
+    position: absolute; top: 30px; left: 30px; display: flex; align-items: center; gap: 8px;
+    color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 0.95rem;
+    padding: 10px 15px; border-radius: 30px; background: rgba(15, 23, 42, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.05); backdrop-filter: blur(5px); transition: all 0.3s ease; z-index: 100;
+}
+.back-btn:hover { color: #fff; background: rgba(30, 41, 59, 0.8); border-color: var(--accent-blue); box-shadow: 0 4px 15px rgba(96, 165, 250, 0.2); }
+.back-btn:hover svg { transform: translateX(-4px); }
+
+.card-brief { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 15px; min-height: 40px; }
+.model-specs { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent-blue); opacity: 0.8; margin-bottom: 10px; }
+
+.card-tag { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; margin-bottom: 15px; }
+.card-tag.fast { background: rgba(96, 165, 250, 0.1); color: #60a5fa; border: 1px solid rgba(96, 165, 250, 0.2); }
+.card-tag.precision { background: rgba(78, 255, 163, 0.1); color: #4effa3; border: 1px solid rgba(78, 255, 163, 0.2); }
+
+.badge { display: inline-block; padding: 5px 12px; border-radius: 10px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; margin-bottom: 15px; }
+.badge-blue { background: rgba(96, 165, 250, 0.15); color: var(--accent-blue); }
+.badge-green { background: rgba(78, 255, 163, 0.15); color: var(--accent-green); }
+
+/* =========================================
+   8. CLINICAL PANEL (Unified Dashboard)
+   ========================================= */
+.clinical-panel {
+    width: 100%;
+    max-width: 900px;
+    margin: 30px auto 50px;
+    background: rgba(15, 23, 42, 0.8); /* Dark, glass-like background */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+.panel-header {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 12px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    text-align: center;
+}
+
+.panel-header h3 {
+    margin: 0;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    font-weight: 700;
+}
+
+.panel-content {
+    display: flex;
+    justify-content: space-around;
+    align-items: stretch;
+    padding: 20px 0;
+}
+
+.panel-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0 10px;
+}
+
+.panel-column h4 {
+    color: var(--accent-blue);
+    font-size: 0.95rem;
+    margin-bottom: 15px;
+    font-weight: 600;
+    opacity: 0.9;
+}
+
+.panel-divider {
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.1), transparent);
+}
+
+/* Mini Stats Rows */
+.mini-stat {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 140px;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+    color: var(--text-main);
+}
+
+.mini-stat span {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.mini-stat strong {
+    font-family: 'Courier New', monospace; /* Monospace for numbers looks technical */
+    font-weight: 700;
+}
+
+/* Diagnosis Colors */
+.mini-stat.positive strong { color: var(--accent-red); }
+.mini-stat.negative strong { color: var(--accent-green); }
+
+/* =========================================
+   9. RESPONSIVE
+   ========================================= */
+@media (max-width: 768px) {
+    h1 { font-size: 2rem; }
+    .comparison-container, .result-grid { flex-direction: column; align-items: center; }
+    .result-content { width: 100%; max-width: 350px; }
+    .back-btn span { display: none; }
+    
+    /* Clinical Panel Responsive */
+    .panel-content {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .panel-divider {
+        width: 80%;
+        height: 1px;
+        margin: 0 auto;
+        background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.1), transparent);
+    }
+    
+    .panel-column {
+        padding: 10px 0;
+    }
+}
+
+/* =========================================
+   10. MODAL (LIGHTBOX)
+   ========================================= */
+
+.modal { display: none; position: fixed; z-index: 2000; padding-top: 50px; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(15, 23, 42, 0.95); backdrop-filter: blur(8px); animation: fadeIn 0.3s ease; }
+.modal-content { margin: auto; display: block; width: 80%; max-width: 900px; max-height: 85vh; object-fit: contain; border-radius: 12px; box-shadow: 0 0 50px rgba(0,0,0,0.5); animation: zoomIn 0.3s ease; }
+#caption { margin: auto; display: block; width: 80%; max-width: 700px; text-align: center; color: var(--text-muted); padding: 20px 0; font-size: 1.1rem; }
+.close-modal { position: absolute; top: 20px; right: 40px; color: #f1f1f1; font-size: 40px; font-weight: bold; transition: 0.3s; cursor: pointer; z-index: 2001; }
+.close-modal:hover, .close-modal:focus { color: var(--accent-blue); text-decoration: none; cursor: pointer; }
+@keyframes zoomIn { from {transform:scale(0.8); opacity: 0;} to {transform:scale(1); opacity: 1;} }
+.img-box img:hover { transform: scale(1.02); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+
+
+/*<* --- Tooltip Refined Design --- */
+
+
+.model-tooltip {
+    visibility: hidden;
+    opacity: 0;
+    width: 380px; /* Increased width for technical English text */
+    background-color: rgba(255, 255, 255, 0.98); /* Near-white for clarity */
+    color: #2d3748;
+    text-align: left;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    position: absolute;
+    z-index: 999;
+    
+    /* Positioned above the card */
+    bottom: 115%; 
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    
+    /* Shadow and Typography */
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12), 0 5px 15px rgba(0, 0, 0, 0.06);
+    font-size: 0.88rem;
+    line-height: 1.6;
+    letter-spacing: -0.01em;
+    
+    /* Smooth Animation */
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+    pointer-events: none;
+}
+
+/* Tooltip Arrow */
+.model-tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -10px;
+    border-width: 10px;
+    border-style: solid;
+    border-color: #ffffff transparent transparent transparent;
+}
+
+/* Decorative Left Border based on Model Type */
+#btn-standard .model-tooltip { border-left: 5px solid #3182ce; }
+#btn-advanced .model-tooltip { border-left: 5px solid #48bb78; }
+
+/* Show State */
+.card:hover .model-tooltip {
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.model-features {
+    margin: 10px 0 15px 0;
+    padding-left: 18px;
+    text-align: left;
+}
+
+.model-features li {
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.model-disclaimer {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    font-style: italic;
+}
+
+.pipeline-bullets{
+  padding-left:18px;
+  margin:0;
+}
+
+.pipeline-bullets li{
+  margin-bottom:8px;
+  font-size:0.85rem;
+  line-height:1.45;
+  color:var(--text-muted);
+}
+
+.pipeline-bullets strong{
+  color:var(--text-main);
+}
+
+/* Info Icon Styling */
+.header-with-info {
+    width: 100%;
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    position: relative;      
+    margin-bottom: 15px;
+}
+
+.info-icon {
+    position: absolute;      
+    right: 0;                
+    color: #cbd5e0;
+    font-size: 1rem;
+    cursor: help;
+    transition: color 0.2s;
+}
+
+.card:hover .info-icon {
+    color: #718096;
+}
+
+/* Responsive adjustment for small screens */
+@media (max-width: 768px) {
+    .model-tooltip {
+        width: 280px;
+        font-size: 0.8rem;
+    }
+}
+
+/* Contenedor de la explicación técnica */
+.explanation-box {
+    margin-top: 15px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05); /* Fondo muy sutil */
+    border-left: 4px solid var(--accent-red); /* Color rojo característico del Grad-CAM */
+    border-radius: 4px 8px 8px 4px;
+    text-align: left; /* Para que el texto sea legible */
+}
+
+.explanation-box h5 {
+    color: var(--accent-red);
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.explanation-box p {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.explanation-box strong {
+    color: var(--text-main); /* Resalta las palabras técnicas */
+}
+
+/* Reutilizamos .explanation-box pero cambiamos el color para segmentación */
+.explanation-box.seg-theme {
+    border-left: 4px solid var(--accent-green);
+}
+
+.explanation-box.seg-theme h5 {
+    color: var(--accent-green);
+}
+
+/* Opcional: un ligero tinte de fondo para diferenciar los bloques */
+#boxSeg .explanation-box {
+    background: rgba(78, 255, 163, 0.03); 
+}
+
+/* Reutilizamos .explanation-box pero cambiamos el color para AutoCrop */
+.explanation-box.crop-theme {
+    border-left: 4px solid #facc15;
+}
+
+.explanation-box.crop-theme h5 {
+    color: #facc15;
+}
+
+/* Opcional: un ligero tinte de fondo para el bloque de recorte */
+#boxCrop .explanation-box {
+    background: rgba(96, 165, 250, 0.03); 
+}
+
+/* Color temático para la detección de objetos */
+.explanation-box.yolo-theme {
+    border-left: 4px solid var(--accent-blue); /* Color ámbar/amarillo técnico */
+}
+
+.explanation-box.yolo-theme h5 {
+    color: var(--accent-blue);
+}
+
+#boxYolo .explanation-box {
+    background: rgba(96, 165, 250, 0.03); 
+}   
+
+.explanation-box.input-theme {
+    border-left: 4px solid #e2e8f0;
+    color: #e2e8f0;
+    background: rgba(96, 165, 250, 0.03);
+    margin-top: 15px;
+    padding: 18px;
+    border-radius: 4px 12px 12px 4px;
+    text-align: left;
+}
+
+.explanation-box.input-theme h5 {
+    color: #e2e8f0;
+    font-size: 1rem;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.specs-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.specs-list li {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.specs-list li i {
+    color: #e2e8f0;
+    margin-top: 3px;
+    font-size: 0.9rem;
+    width: 20px;
+    text-align: center;
+}
+
+/* Resaltado de las resoluciones */
+.specs-list strong {
+    color: var(--text-main);
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1px 4px;
+    border-radius: 3px;
+}
+
+
+#boxCalcium {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.calcium-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+#visual_calcium {
+  width: 100%;
+  border-radius: 10px;
+  cursor: zoom-in;
+  transition: transform 0.2s ease;
+}
+
+.calcium-badge {
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+  background: rgba(220, 38, 38, 0.9);
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 16px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+}
+
+/* =========================================
+   11. FOOTER (CREDITS)
+   ========================================= */
+.app-footer {
+    margin-top: auto; /* Empuja el footer al fondo si hay poco contenido */
+    width: 100%;
+    text-align: center;
+    padding: 40px 20px 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05); /* Línea separadora sutil */
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    animation: fadeIn 1.5s ease-out;
+}
+
+.creator {
+    color: #e2e8f0; /* Color claro pero no blanco puro */
+    font-weight: 600;
+    margin: 0 2px;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+    cursor: default;
+}
+
+.creator:hover {
+    color: var(--accent-blue);
+    text-shadow: 0 0 10px rgba(96, 165, 250, 0.4);
+}
+
+.footer-sub {
+    font-size: 0.8rem;
+    opacity: 0.5;
+    margin-top: 8px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* =========================================
+   12. Collapsible Explanation Boxes
+   ========================================= */
+
+.explanation-box.collapsible {
+    overflow: hidden;
+}
+
+.explanation-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.toggle-icon {
+    font-weight: 700;
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+}
+
+.explanation-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, opacity 0.3s ease;
+    opacity: 0;
+}
+
+.explanation-box.active .explanation-content {
+    max-height: 1000px;
+    opacity: 1;
+}
+
+.explanation-box.active .toggle-icon {
+    transform: rotate(45deg);
+}
+
+#multiResultsWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 60px;
+    margin-top: 40px;
+}
+
+.case-block {
+    border-top: 2px solid rgba(255,255,255,0.05);
+    padding-top: 40px;
+}
+
+
+/* =========================================
+   13. PDF GENERATION BUTTON & LEGAL DISCLAIMER
+   ========================================= */
+
+.report-action-container {
+    margin: 25px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-generate-report {
+    background: #d32f2f; /* Professional Medical Red */
+    color: #ffffff;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(211, 47, 47, 0.2);
+}
+
+.btn-generate-report:hover {
+    background: #b71c1c;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(211, 47, 47, 0.3);
+}
+
+.btn-generate-report i {
+    font-size: 1.1rem;
+}
+
+.medical-disclaimer {
+    margin-top: 30px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-left: 4px solid #f59e0b; /* Warning Amber */
+    border-radius: 8px;
+}
+
+.medical-disclaimer h6 {
+    color: #f59e0b;
+    margin: 0 0 10px 0;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.medical-disclaimer p {
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: #94a3b8; /* Muted Slate */
+    margin: 0;
+    text-align: justify;
+}
+
+.medical-disclaimer strong {
+    color: #cbd5e1;
+}

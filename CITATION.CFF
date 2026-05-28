@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: "If you use the materials of this repository, please cite it as 
+below."
+authors:
+  - family-names: "Miranda Bautista"
+    given-names: "Juan"
+    orcid: "https://orcid.org/0000-0003-3186-6627"
+  - family-names: "Egido Rodríguez"
+    given-names: "Sergio"
+    orcid: "https://orcid.org/0009-0009-1108-7299"
+title: "Application for detenction of rotator cuff calcifications using CNN and ML models"
+version: 1.0.0
+date-released: 2026-02-11
+url: 
+"https://huggingface.co/spaces/egiiddo/TFG"

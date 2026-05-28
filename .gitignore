@@ -1,0 +1,26 @@
+# Credenciales y configuración local (nunca subir a git/HuggingFace)
+.env.local
+
+# Pesos de modelos descargados
+*.pt
+*.pth
+*.ckpt
+*.keras
+*.h5
+*.pkl
+*.joblib
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Logs
+*.log
+flask_stderr.log
+flask_stdout.log
+
+# DICOM test images (large medical files)
+*.dcm

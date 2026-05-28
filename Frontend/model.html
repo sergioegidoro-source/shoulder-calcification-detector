@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Diagnostics</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <a href="index.html" class="back-btn">
+    <span>Select Model</span>
+  </a>
+
+  <h1>AI Assisted Diagnosis</h1>
+  <p id="selectedModelText"></p>
+
+  <div class="controls-wrapper">
+    <div class="control-group">
+      <label for="thresholdSelect">Threshold:</label>
+      <select id="thresholdSelect">
+        <option value="0.3">0.3 (High)</option>
+        <option value="0.4">0.4</option>
+        <option value="0.5" selected>0.5 (Standard)</option>
+        <option value="0.6">0.6</option>
+        <option value="0.7">0.7 (Low)</option>
+      </select>
+    </div>
+    <div class="control-group" id="gradcamContainer">
+      <input type="checkbox" id="gradcamCheck" checked>
+      <label for="gradcamCheck">Enable Heat Map</label>
+    </div>
+  </div>
+
+  <div class="main-upload-wrapper">
+    <div class="drop-area" id="drop-area">
+        <h3 class="drop-title">Drag X-Ray here</h3>
+        <p class="drop-subtitle">DICOM, JPG, PNG</p>
+        <button class="browse-btn" type="button">Browse Files</button>
+        <input type="file" id="file-input" hidden accept="image/*,.dcm">
+        <div id="file-name" class="file-name"></div>
+    </div>
+  </div>
+
+  <div id="historyContainer"></div>
+
+  <div id="caseBlock">
+
+    <div id="resultsContainer" style="display:none;">
+        <div id="grid-512" class="result-grid" style="display:none;">
+            <div id="res-cnn-box" class="result-content">
+                <div class="model-badge">Visual Model (CNN)</div>
+                <div id="res-cnn-diag" class="diagnosis-highlight">--</div>
+                <div class="result-meta">Confidence: <span id="res-cnn-prob">--</span></div>
+            </div>
+            <div id="res-hyb-box" class="result-content">
+                <div class="model-badge">Pattern Model (Hybrid)</div>
+                <div id="res-hyb-diag" class="diagnosis-highlight">--</div>
+                <div class="result-meta">Confidence: <span id="res-hyb-prob">--</span></div>
+            </div>
+        </div>
+
+        <div id="grid-300" class="result-grid" style="display:none;">
+            <div id="res-seg-box" class="result-content">
+                <div class="model-badge">Segmentation Analysis</div>
+                <div id="res-seg-diag" class="diagnosis-highlight">--</div>
+                <div class="result-meta">Confidence: <span id="res-seg-prob">--</span></div>
+            </div>
+        </div>
+
+        <div class="laterality-info">
+            Laterality: <strong id="res-laterality">--</strong>
+        </div>
+        <div id="res-error-msg" style="display:none;"></div>
+    </div>
+
+    <div class="comparison-container">
+        
+        <div class="img-box" id="boxOriginal" style="display:none;">
+          <p class="img-label">Input Image</p>
+          <img id="visual_original" alt="Original">
+          <div class="explanation-box input-theme collapsible">
+            <div class="explanation-header">
+              <h5>Input Processing & Multi-Scale Pipeline</h5>
+              <span class="toggle-icon">+</span>
+            </div>
+            <div class="explanation-content">
+              <ul class="pipeline-bullets">
+                <li><strong>Accepted formats:</strong> DICOM, JPG and PNG radiographic images.</li>
+                <li><strong>U-Net ROI extraction → 300×300 px (CNN classification):</strong> The humerus is segmented to center the image on the humeral head and the region of interest is cropped and resized to 300×300 px.</li>
+                <li><strong>YOLO detection input → 896×896 px:</strong> The same ROI is resized to 896×896 px and used for calcification detection and localization with bounding boxes.</li>
+                <li><strong>Standardization:</strong> All inputs are converted to RGB and undergo intensity normalization to ensure stable and comparable results.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div id="boxGradcam" class="img-box" style="display:none;">
+          <p class="img-label">AI Attention Map</p>
+          <img id="imgGradcam" style="display:none;">
+          <div class="explanation-box collapsible">
+            <div class="explanation-header"><h5>Visual Interpretability (Grad-CAM)</h5><span class="toggle-icon">+</span></div>
+            <div class="explanation-content">
+              <p>This heatmap visualizes the model’s <strong>attention</strong>, highlighting the regions of the X-ray that most influenced the prediction.</p>
+              <ul class="pipeline-bullets">
+                <li><strong>Warmer colors:</strong> indicate areas with stronger influence on the prediction.</li>
+                <li><strong>Cooler colors:</strong> represent regions with lower contribution.</li>
+                <li>Helps clinicians understand <strong>where the model focused</strong> when estimating the likelihood of calcific tendinopathy.</li>
+                <li><strong>Interpretation aid:</strong> supports clinical review but is <strong>not a definitive lesion outline</strong>.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="img-box" id="boxSegmented" style="display:none;">
+          <p class="img-label">U-Net Segmentation</p>
+          <img id="visual_segmented">
+          <div class="explanation-box seg-theme collapsible">
+            <div class="explanation-header"><h5>Anatomical Segmentation (U-Net)</h5><span class="toggle-icon">+</span></div>
+            <div class="explanation-content">
+              <p>This mask is generated by a <strong>U-Net segmentation network</strong> that isolates the <strong>humerus / humeral head</strong> from the surrounding anatomy.</p>
+              <ul class="pipeline-bullets">
+                <li><strong>Binary segmentation mask:</strong> each pixel is classified as <strong>bone (1)</strong> or <strong>background (0)</strong>.</li>
+                <li>Helps remove irrelevant structures and <strong>reduce background noise</strong>.</li>
+                <li>Ensures the analysis focuses on the <strong>clinically relevant anatomical region</strong>.</li>
+                <li>Enables subsequent preprocessing steps such as <strong>automatic ROI centering and cropping</strong>.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="img-box" id="boxCropped" style="display:none;">
+          <p class="img-label">Auto-Crop ROI</p>
+          <img id="visual_cropped">
+          <div class="explanation-box crop-theme collapsible">
+            <div class="explanation-header"><h5>Mask-Guided AutoCrop (ROI)</h5><span class="toggle-icon">+</span></div>
+            <div class="explanation-content">
+              <p>The Region of Interest (ROI) is automatically computed from the <strong>segmentation mask</strong> to center the analysis on the joint space.</p>
+              <ul class="pipeline-bullets">
+                <li>The humeral head location is used to determine the <strong>optimal crop region</strong>.</li>
+                <li>Produces a standardized input focused on the <strong>subacromial space</strong>.</li>
+                <li>Reduces irrelevant background and <strong>improves diagnostic sensitivity</strong>.</li>
+                <li>Ensures consistent input geometry for the downstream AI models.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="img-box" id="boxGradcam300" style="display: none;">
+          <p class="img-label" style="color: #f87171;">ROI Attention</p>
+          <div id="gradcamLoader300" class="spinner-container">
+              <div class="spinner"></div>
+              <p class="loading-text">Heatmap...</p>
+          </div>
+          <img id="imgGradcam300" src="" style="display: none;">
+          <div class="explanation-box collapsible">
+              <div class="explanation-header">
+                  <h5>Visual Interpretability (Grad-CAM)</h5>
+                  <span class="toggle-icon">+</span>
+              </div>
+              <div class="explanation-content">
+                  <p>This heatmap visualizes the model’s <strong>attention</strong>, highlighting the regions of the ROI that most influenced the prediction.</p>
+                  <ul class="pipeline-bullets">
+                      <li><strong>Warmer colors:</strong> indicate areas with stronger influence on the prediction.</li>
+                      <li><strong>Cooler colors:</strong> represent regions with lower contribution.</li>
+                      <li>Helps clinicians understand <strong>where the model focused</strong> when estimating the likelihood of calcific tendinopathy.</li>
+                      <li><strong>Interpretation aid:</strong> supports clinical review but is <strong>not a definitive lesion outline</strong>.</li>
+                  </ul>
+              </div>
+          </div>
+        </div>
+
+        <div id="boxYolo" class="img-box" style="display:none;">
+          <p class="img-label">YOLOv8 Precision</p>
+          <img id="visual_yolo">
+          <div class="explanation-box yolo-theme collapsible">
+            <div class="explanation-header"><h5>Object Detection (YOLOv8)</h5><span class="toggle-icon">+</span></div>
+            <div class="explanation-content">
+              <p>This module performs <strong>object detection</strong> to localize calcific deposits in positive cases.</p>
+              <ul class="pipeline-bullets">
+                <li>Draws a <strong>bounding box</strong> around the suspected calcification.</li>
+                <li>Provides a <strong>confidence score</strong> indicating detection reliability.</li>
+                <li>Estimates the most likely affected tendon: <em>supraspinatus, infraspinatus, or subscapularis</em>.</li>
+                <li>Helps clinicians quickly identify <strong>where the calcification is located</strong>.</li>
+              </ul>
+              <p><em>Decision-support tool only — final interpretation remains clinical.</em></p>
+            </div>
+          </div>
+        </div>
+
+        <div id="boxCalcium" class="img-box" style="display:none;">
+          <p class="img-label">Calcification Type Analysis</p>
+          <div class="calcium-wrapper">
+            <img id="visual_calcium" />
+            <div id="calciumBadge" class="calcium-badge"></div>
+          </div>
+          <div class="explanation-box collapsible">
+            <div class="explanation-header"><h5>Hybrid Analysis (U-Net + Radiomics + ML)</h5><span class="toggle-icon">+</span></div>
+            <div class="explanation-content">
+              <p>The calcification region is segmented using U-Net (300px resolution). Radiomic descriptors are extracted from the segmented region, and a Logistic Regression classifier determines whether the morphology corresponds to Type I-II or Type III.</p>
+            </div>
+          </div>
+        </div>
+
+    </div> <div class="report-action-container">
+      <button class="btn-generate-report" onclick="generatePDF()">
+          <i class="fa-solid fa-file-medical"></i> GENERATE DIAGNOSTIC REPORT (PDF)
+      </button>
+    </div>
+
+    <div class="medical-disclaimer">
+        <h6><i class="fa-solid fa-circle-exclamation"></i> Medical Disclaimer</h6>
+        <p>
+            This AI-powered tool is intended for <strong>clinical decision support only</strong> and does not provide a definitive medical diagnosis. 
+            The findings generated by this system must be reviewed and verified by a <strong>qualified healthcare professional</strong>. 
+            This software is not a substitute for professional medical judgment, physical examination, or laboratory testing. 
+            Final diagnostic responsibility remains solely with the attending physician.
+        </p>
+    </div>
+
+  </div> <div id="imageModal" class="modal">
+    <span class="close-modal">&times;</span>
+    <img class="modal-content" id="imgExpanded">
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <script src="js/model.js"></script>
+  <script src="js/pdf.js"></script>
+
+</body>
+</html>

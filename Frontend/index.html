@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Pipeline</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="header-content">
+        <h1>Select Analysis Pipeline</h1>
+        <p class="subtitle">Choose your preferred diagnostic workflow.</p>
+    </div>
+
+    <div class="clinical-panel">
+        <div class="panel-header">
+            <h3>Global System Statistics</h3>
+        </div>
+        
+        <div class="panel-content">
+            <div class="panel-column">
+                <h4>Model Usage</h4>
+                <div class="mini-stat">
+                    <span>CNN:</span> <strong id="val-cnn">0</strong>
+                </div>
+                <div class="mini-stat">
+                    <span>Seg:</span> <strong id="val-seg">0</strong>
+                </div>
+            </div>
+
+            <div class="panel-divider"></div>
+
+            <div class="panel-column">
+                <h4>Laterality</h4>
+                <div class="mini-stat">
+                    <span>Left:</span> <strong id="val-left">0</strong>
+                </div>
+                <div class="mini-stat">
+                    <span>Right:</span> <strong id="val-right">0</strong>
+                </div>
+            </div>
+
+            <div class="panel-divider"></div>
+
+            <div class="panel-column">
+                <h4>Diagnosis</h4>
+                <div class="mini-stat positive">
+                    <span>Positive:</span> <strong id="val-pos">0</strong>
+                </div>
+                <div class="mini-stat negative">
+                    <span>Negative:</span> <strong id="val-neg">0</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-container">
+        <div class="card" id="btn-standard">
+            <div class="card-icon-wrapper blue-theme">
+                <i class="fa-solid fa-bone"></i>
+            </div>
+            <div class="card-content">
+                <div class="header-with-info">
+                    <span class="badge badge-blue">DUAL-MODEL</span>
+                    <i class="fa-solid fa-circle-info info-icon"></i>
+                </div>
+                <h2>CNN Diagnostic Model (VGG19 + GMP)</h2>
+                <p>
+                This model analyzes shoulder X-ray images to assist in the detection of 
+                <strong>calcific tendinopathy of the rotator cuff</strong>.
+                </p>
+
+                <ul class="model-features">
+                    <li>
+                        <strong>Probability Score:</strong> Estimates the likelihood of calcific tendinopathy.
+                    </li>
+                    <li>
+                        <strong>Visual Heatmap:</strong> Highlights the most diagnostically relevant regions in the image.
+                    </li>
+                    <li>
+                        <strong>High-Resolution Optimized:</strong> Designed to process large radiological images efficiently.
+                    </li>
+                </ul>
+
+                <p class="model-disclaimer">
+                Decision-support tool only — <strong>not intended as a standalone clinical diagnosis.</strong>
+                </p>
+                <div class="select-indicator">Select Model <i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+            
+            <div class="model-tooltip">
+                This model uses a VGG19 backbone (pretrained on ImageNet) adapted with Global Max Pooling (GMP) to focus on the most informative imaging features. Results are presented as a probability score plus a heatmap (Grad-CAM) that visualizes which regions contributed most to the prediction. To handle high-resolution X-rays efficiently, the system uses asynchronous batch loading (keras.utils.Sequence), improving throughput and training stability. The goal is robust, consistent pattern detection to support clinical assessment of rotator cuff calcific tendinopathy.
+            </div>
+        </div>
+
+        <div class="card" id="btn-advanced">
+            <div class="card-icon-wrapper green-theme">
+                <i class="fa-solid fa-brain"></i>
+            </div>
+            <div class="card-content">
+                <div class="header-with-info">
+                    <span class="badge badge-green">U-Net AI</span>
+                    <i class="fa-solid fa-circle-info info-icon"></i>
+                </div>
+                <h2>U-Net Guided Model (Humeral Head ROI)</h2>
+                <p>
+                This model performs an anatomical preprocessing step before classification.
+                A <strong>U-Net segmentation network</strong> first isolates the humerus and 
+                automatically crops the image around the <strong>humeral head</strong>, which is 
+                the region where rotator cuff calcifications most frequently appear.
+                </p>
+
+                <ul class="model-features">
+                    <li>
+                        <strong>Probability Score:</strong> Estimates the likelihood of calcific tendinopathy.
+                    </li>
+                    <li>
+                        <strong>Visual Heatmap:</strong> Highlights the image regions that most influenced the prediction.
+                    </li>
+                    <li>
+                        <strong>Overlay Visualization:</strong> Displays the prediction results directly on the image for easier interpretation.
+                    </li>
+                </ul>
+
+                <p class="model-disclaimer">
+                Clinical decision-support tool only — <strong>not intended as a standalone diagnosis.</strong>
+                </p>
+                <div class="select-indicator">Select Model <i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+
+            <div class="model-tooltip">
+                This model combines semantic segmentation and classification. A dedicated U-Net segments the humerus and is used to center the image on the humeral head, reducing background noise and focusing analysis on the most relevant anatomy for detecting rotator cuff calcific deposits.
+                A DICOM preprocessing pipeline extracts raw pixel data, adjusts contrast using Window Center/Width, and normalizes intensities to ensure consistent visualization. The pipeline then applies targeted cropping, padding, and resizing to standardize inputs while preserving the humeral head region.
+                Results are displayed as a probability score plus a heatmap (Grad-CAM) and an image overlay, helping users understand where the model is “looking” when estimating the likelihood of calcific tendinopathy.
+            </div>
+        </div>
+    </div>
+  
+    <footer class="app-footer">
+        <p>Project developed by <span class="creator">Juan Miranda Bautista</span>, <span class="creator">Sergio Egido Rodríguez</span> & <span class="creator">Joaquín Moreno Guzmán</span></p>
+        <p class="footer-sub">AI-DR System &copy; 2025</p>
+    </footer>
+
+    <script src="js/index.js"></script>
+</body>
+</html>
